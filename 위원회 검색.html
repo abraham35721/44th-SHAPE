@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>위원회 검색</title>
+<style>
+  :root {
+    --blue:       #007AFF;
+    --blue-light: rgba(0,122,255,0.10);
+    --bg:         #F2F2F7;
+    --surface:    #FFFFFF;
+    --surface2:   #F2F2F7;
+    --label:      #1C1C1E;
+    --label2:     #3A3A3C;
+    --label3:     #6D6D72;
+    --label4:     #AEAEB2;
+    --separator:  rgba(60,60,67,0.13);
+    --radius-sm:  10px;
+    --radius-md:  14px;
+    --radius-lg:  20px;
+    --shadow-sm:  0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
+    --shadow-md:  0 4px 16px rgba(0,0,0,0.10), 0 1px 4px rgba(0,0,0,0.05);
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif;
+    background: var(--bg);
+    color: var(--label);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── Layout ── */
+  .page {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 56px 20px 100px;
+  }
+
+  /* ── Header ── */
+  .header { margin-bottom: 28px; }
+
+  .header-icon {
+    width: 56px; height: 56px;
+    background: var(--blue);
+    border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 16px;
+    box-shadow: 0 4px 14px rgba(0,122,255,0.35);
+  }
+
+  .header-icon svg { width: 28px; height: 28px; color: #fff; }
+
+  .page-title {
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    color: var(--label);
+    margin-bottom: 4px;
+  }
+
+  .page-subtitle {
+    font-size: 15px;
+    color: var(--label3);
+    line-height: 1.5;
+  }
+
+  /* ── Nav ── */
+  .nav-bar {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 10px;
+  }
+
+  .nav-btn {
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    border: none;
+    background: var(--surface);
+    cursor: pointer;
+    color: var(--blue);
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: var(--shadow-sm);
+    transition: background 0.15s, transform 0.1s;
+  }
+
+  .nav-btn:active:not(:disabled) { transform: scale(0.92); }
+
+  .nav-btn:disabled {
+    color: var(--label4);
+    box-shadow: none;
+    background: var(--surface2);
+    cursor: default;
+  }
+
+  .nav-btn svg { width: 16px; height: 16px; }
+
+  /* ── Search ── */
+  .search-wrap {
+    position: relative;
+    margin-bottom: 14px;
+  }
+
+  .search-icon {
+    position: absolute;
+    left: 14px; top: 50%;
+    transform: translateY(-50%);
+    width: 17px; height: 17px;
+    color: var(--label4);
+    pointer-events: none;
+  }
+
+  #searchInput {
+    width: 100%;
+    padding: 14px 44px 14px 42px;
+    font-size: 16px;
+    font-family: inherit;
+    color: var(--label);
+    background: var(--surface);
+    border: none;
+    border-radius: var(--radius-md);
+    outline: none;
+    box-shadow: var(--shadow-sm);
+    transition: box-shadow 0.2s;
+  }
+
+  #searchInput:focus {
+    box-shadow: 0 0 0 3.5px rgba(0,122,255,0.28), var(--shadow-sm);
+  }
+
+  #searchInput::placeholder { color: var(--label4); }
+
+  .clear-btn {
+    position: absolute;
+    right: 12px; top: 50%;
+    transform: translateY(-50%);
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    background: var(--label4);
+    border: none;
+    cursor: pointer;
+    display: none;
+    align-items: center; justify-content: center;
+    color: #fff;
+    font-size: 12px;
+    line-height: 1;
+    transition: background 0.15s;
+  }
+
+  .clear-btn.visible { display: flex; }
+  .clear-btn:hover { background: var(--label3); }
+
+  /* ── Segmented Control (tabs) ── */
+  .seg-wrap {
+    background: var(--surface2);
+    border-radius: var(--radius-sm);
+    padding: 3px;
+    display: flex;
+    gap: 2px;
+    margin-bottom: 20px;
+  }
+
+  .seg-btn {
+    flex: 1;
+    padding: 7px 4px;
+    font-size: 13px;
+    font-weight: 500;
+    font-family: inherit;
+    color: var(--label3);
+    background: transparent;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+
+  .seg-btn.active {
+    background: var(--surface);
+    color: var(--label);
+    font-weight: 600;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.12), 0 0.5px 1px rgba(0,0,0,0.08);
+  }
+
+  /* ── Quick Tags ── */
+  .tags-section { margin-bottom: 20px; }
+
+  .tags-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--label4);
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+    margin-bottom: 10px;
+    padding-left: 2px;
+  }
+
+  .tags-scroll {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+  }
+
+  .tag-chip {
+    padding: 6px 13px;
+    border-radius: 20px;
+    font-size: 13.5px;
+    font-weight: 500;
+    font-family: inherit;
+    background: var(--surface);
+    color: var(--label2);
+    border: none;
+    cursor: pointer;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+
+  .tag-chip:active { transform: scale(0.95); }
+
+  .tag-chip.selected {
+    background: var(--blue);
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(0,122,255,0.35);
+  }
+
+  /* ── Divider ── */
+  .divider {
+    height: 1px;
+    background: var(--separator);
+    margin: 18px 0;
+  }
+
+  /* ── Stats ── */
+  .result-stats {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--label4);
+    margin-bottom: 12px;
+    padding-left: 2px;
+  }
+
+  /* ── Cards ── */
+  #results { display: flex; flex-direction: column; gap: 10px; }
+
+  .card {
+    background: var(--surface);
+    border-radius: var(--radius-md);
+    padding: 16px 18px;
+    box-shadow: var(--shadow-sm);
+    transition: box-shadow 0.2s, transform 0.1s;
+  }
+
+  @media (hover:hover) {
+    .card:hover {
+      box-shadow: var(--shadow-md);
+      transform: translateY(-1px);
+    }
+  }
+
+  .card-top {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+  }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: -0.1px;
+  }
+
+  .badge-committee {
+    background: var(--blue);
+    color: #fff;
+  }
+
+  .badge-dept {
+    background: var(--blue-light);
+    color: var(--blue);
+  }
+
+  .card-rows {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .card-row {
+    display: flex;
+    gap: 8px;
+    font-size: 14px;
+    line-height: 1.45;
+  }
+
+  .row-label {
+    flex-shrink: 0;
+    font-size: 11.5px;
+    font-weight: 600;
+    color: var(--label4);
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    margin-top: 1px;
+    min-width: 52px;
+  }
+
+  .row-value { color: var(--label2); }
+
+  mark {
+    background: rgba(0,122,255,0.15);
+    color: var(--blue);
+    border-radius: 3px;
+    padding: 0 1px;
+    font-weight: 600;
+  }
+
+  /* ── Empty State ── */
+  .empty {
+    text-align: center;
+    padding: 64px 20px;
+    color: var(--label4);
+  }
+
+  .empty-icon {
+    font-size: 44px;
+    margin-bottom: 14px;
+    display: block;
+  }
+
+  .empty-title {
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--label3);
+    margin-bottom: 6px;
+  }
+
+  .empty-sub { font-size: 14px; }
+
+  /* ── Mobile ── */
+  @media (max-width: 480px) {
+    .page { padding: 44px 16px 88px; }
+    .page-title { font-size: 24px; }
+    #searchInput { font-size: 16px; padding: 13px 40px 13px 40px; }
+    .seg-btn { font-size: 12px; padding: 7px 2px; }
+    .card { padding: 14px 15px; }
+    .header-icon { width: 48px; height: 48px; border-radius: 12px; }
+    .header-icon svg { width: 24px; height: 24px; }
+  }
+
+  @supports (padding-bottom: env(safe-area-inset-bottom)) {
+    .page { padding-bottom: calc(100px + env(safe-area-inset-bottom)); }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="header-icon">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z"/>
+      </svg>
+    </div>
+    <div class="page-title">위원회 검색</div>
+    <div class="page-subtitle">사람, 사회이슈, 사역영역으로 검색하면 해당 위원회와 국/부를 찾을 수 있습니다.</div>
+  </div>
+
+  <!-- Nav -->
+  <div class="nav-bar">
+    <button class="nav-btn" id="btnBack" disabled title="뒤로 가기">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/>
+      </svg>
+    </button>
+    <button class="nav-btn" id="btnForward" disabled title="앞으로 가기">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/>
+      </svg>
+    </button>
+  </div>
+
+  <!-- Search -->
+  <div class="search-wrap">
+    <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+        d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z"/>
+    </svg>
+    <input id="searchInput" type="search" placeholder="검색어 입력 (예: 청소년, 선교, 장애)" autocomplete="off"/>
+    <button class="clear-btn" id="clearBtn" aria-label="검색어 지우기">✕</button>
+  </div>
+
+  <!-- Segmented control -->
+  <div class="seg-wrap" role="tablist">
+    <button class="seg-btn active" data-field="all" role="tab">전체</button>
+    <button class="seg-btn" data-field="사람" role="tab">사람</button>
+    <button class="seg-btn" data-field="사회이슈" role="tab">사회이슈</button>
+    <button class="seg-btn" data-field="사역영역" role="tab">사역영역</button>
+  </div>
+
+  <!-- Quick tags -->
+  <div class="tags-section">
+    <div class="tags-label">사람 (가나다 순)</div>
+    <div class="tags-scroll" id="quickTags"></div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="result-stats" id="stats"></div>
+  <div id="results"></div>
+
+</div>
+<script>
+const DATA = [
+  {"위원회":"일터선교위원회","국부":"일터선교국","사람":"직장인","사역영역":"일터선교학교/FWIA버킷훈련","사회이슈":"일터선교"},
+  {"위원회":"일터선교위원회","국부":"일터리더십공동체국","사람":"CEO","사역영역":"일터리더십코칭/일터리더십커뮤니티","사회이슈":"일터선교"},
+  {"위원회":"의료미용선교위원회","국부":"의료선교국","사람":"비그리스도인, 가난한 사람들","사역영역":"의료선교","사회이슈":"빈곤, 의료취약계층"},
+  {"위원회":"의료미용선교위원회","국부":"미용선교국","사람":"비그리스도인, 가난한 사람들, 노숙자","사역영역":"이미용선교","사회이슈":"빈곤, 이미용소외지역"},
+  {"위원회":"가정사역위원회","국부":"가정세미나사역국","사람":"신혼부부, 부모, 위기가정","사역영역":"행복플러스 가정세미나","사회이슈":"성도의 훈련, 이혼 위기, 가정 해체"},
+  {"위원회":"가정사역위원회","국부":"마더와이즈사역국","사람":"어머니","사역영역":"마더와이즈 훈련","사회이슈":"성도의 훈련, 기독교 양육"},
+  {"위원회":"가정사역위원회","국부":"선목상담실국","사람":"심리/정신적 어려움을 겪는 사람","사역영역":"기독교 상담","사회이슈":"정신 건강 위기"},
+  {"위원회":"재정위원회","국부":"재정심사국","사람":"","사역영역":"","사회이슈":""},
+  {"위원회":"재정위원회","국부":"재정관리국","사람":"","사역영역":"","사회이슈":""},
+  {"위원회":"선교위원회","국부":"전도국","사람":"비그리스도인, 미자립교회","사역영역":"노방전도/전도행사/전도학교","사회이슈":"전도"},
+  {"위원회":"선교위원회","국부":"국내선교국","사람":"미자립교회, 형제교회","사역영역":"속회방문예배/형제교회 선교사 파송/형제교회/미자립교회 지원","사회이슈":"전도, 선교"},
+  {"위원회":"선교위원회","국부":"해외선교국","사람":"선교사, 다문화이주민, 비그리스도인","사역영역":"파송(협력)선교사 지원/다문화이주민 사역/선교학교","사회이슈":"선교"},
+  {"위원회":"선교위원회","국부":"통일선교국","사람":"통일민(탈북민)","사역영역":"통일민 정착/통일 선교 지원/하나원/통일민교회 지원/통일민 자녀 섬김","사회이슈":"통일, 북한 선교"},
+  {"위원회":"선교위원회","국부":"교회개척지원국","사람":"미자립교회, 형제교회","사역영역":"속회방문예배/형제교회 선교사 파송/형제교회/미자립교회 지원","사회이슈":"전도, 선교"},
+  {"위원회":"선교위원회","국부":"디아스포라선교국","사람":"외국인 유학생, 외국인 노동자, 다문화 이주민, 비그리스도인","사역영역":"노마드선교센터","사회이슈":"다문화, 선교, 전도"},
+  {"위원회":"선교위원회","국부":"특수선교국","사람":"후원이 필요한 단체","사역영역":"후원 단체 접수 및 지원","사회이슈":"사회복지, 교정시설 복음화"},
+  {"위원회":"선교위원회","국부":"특수선교국 중국어예배부","사람":"디아스포라, 외국인 유학생, 외국인 노동자, 다문화 이주민","사역영역":"중국어예배/디아스포라 섬김","사회이슈":"다문화, 선교, 전도"},
+  {"위원회":"예배위원회","국부":"예배국","사람":"선한목자교회 성도","사역영역":"예배 안내","사회이슈":""},
+  {"위원회":"예배위원회","국부":"제단관리국","사람":"선한목자교회 성도","사역영역":"성찬식 준비/물잔섬김/제단 꽃꽂이","사회이슈":""},
+  {"위원회":"예배위원회","국부":"찬양국","사람":"선한목자교회 성도","사역영역":"찬양대/오케스트라/중창단","사회이슈":""},
+  {"위원회":"예배위원회","국부":"경배와찬양국","사람":"선한목자교회 성도","사역영역":"싱어/콰이어/밴드/찬양인도/반주/찬양 콘텐츠 제작","사회이슈":""},
+  {"위원회":"예배위원회","국부":"행사지원국","사람":"선한목자교회 성도","사역영역":"절기행사 지원","사회이슈":""},
+  {"위원회":"제자양육위원회","국부":"목회자제자훈련국","사람":"한국교회 목회자","사역영역":"목회자 제자훈련/신학생 제자훈련","사회이슈":"한국교회"},
+  {"위원회":"제자양육위원회","국부":"평신도제자훈련국","사람":"선한목자교회 성도","사역영역":"예수님의 사람 제자훈련/GS바이블아카데미/엠마오 가는 길","사회이슈":"성도의 훈련"},
+  {"위원회":"제자양육위원회","국부":"임원훈련국","사람":"선한목자교회 성도","사역영역":"전체임원훈련/신천임원훈련","사회이슈":"성도의 훈련"},
+  {"위원회":"제자양육위원회","국부":"새가족사역국","사람":"선한목자교회 성도, 새가족","사역영역":"새가족 안내/새가족 양육수료식","사회이슈":""},
+  {"위원회":"제자양육위원회","국부":"바나바사역국","사람":"선한목자교회 성도, 새가족","사역영역":"바나바 안내데스크/일대일양육지원/양육자훈련/수료자환영회","사회이슈":""},
+  {"위원회":"제자양육위원회","국부":"아버지의마음국","사람":"선한목자교회 성도, 이단교회 성도","사역영역":"이단 상담/이단 세미나","사회이슈":"이단교회"},
+  {"위원회":"중보기도위원회","국부":"교회중보기도국","사람":"선한목자교회 성도, 선한목자교회 목회자","사역영역":"교회를 위한 기도/사역자를 위한 기도/환우기도/다문화 이주민 기도/중독가정 기도/정신장애 기도/난임 기도","사회이슈":"다문화, 정신 건강 위기, 난임, 저출산"},
+  {"위원회":"중보기도위원회","국부":"나라와열방중보기도국","사람":"한국교회, 대한민국, 열방","사역영역":"나라와 열방을 위한 기도/매일합심기도/온라인 기도의 집/기도아웃리치","사회이슈":"바른법제정, 다음세대, 한국교회, 정치경제사회문화, 통일"},
+  {"위원회":"중보기도위원회","국부":"예배중보기도국","사람":"선한목자교회 성도","사역영역":"예배를 위한 기도","사회이슈":""},
+  {"위원회":"중보기도위원회","국부":"기도지원국","사람":"선한목자교회 성도, 한국교회 성도","사역영역":"중보기도학교/중보기도책자/예수동행기도 웹사이트","사회이슈":"성도의 훈련"},
+  {"위원회":"봉사위원회","국부":"예수마을사역국","사람":"가난한 사람들, 환우","사역영역":"행복한밥상(무료급식)/행복한반찬(반찬배달)/예수마을봉사대","사회이슈":"경제적 취약계층, 환우, 노숙자(주목자)"},
+  {"위원회":"봉사위원회","국부":"예수마을사역국 교회봉사부","사람":"가난한 사람들, 목회자","사역영역":"어려운 교인 가정 지원/목회자 게스트 하우스","사회이슈":"경제적 취약계층"},
+  {"위원회":"봉사위원회","국부":"예수마을사역국 위드부","사람":"가난한 사람들","사역영역":"위드","사회이슈":"경제적 취약계층"},
+  {"위원회":"봉사위원회","국부":"지역사회봉사국","사람":"가난한 사람들","사역영역":"주목자 급식/어려운 이웃 재정 지원","사회이슈":"경제적 취약계층"},
+  {"위원회":"봉사위원회","국부":"호스피스사역국","사람":"환우, 사별 가족","사역영역":"호스피스/사별가족 섬김/호스피스교육","사회이슈":"생명의 존엄성"},
+  {"위원회":"봉사위원회","국부":"가족복지국","사람":"비혼모(미혼모)","사역영역":"미혼모자 돌봄/미혼모자 교회 정착 지원","사회이슈":"비혼모(미혼모)"},
+  {"위원회":"봉사위원회","국부":"혼인예식국","사람":"신혼부부","사역영역":"결혼예식","사회이슈":""},
+  {"위원회":"봉사위원회","국부":"사역관리국","사람":"선한목자교회 성도","사역영역":"사역데스크 운영/사역박람회/사역발표회","사회이슈":""},
+  {"위원회":"봉사위원회","국부":"장례예식국","사람":"장례를 당한 가정, 사별 가족","사역영역":"장례지원/장례차량지원/장례예배지원","사회이슈":""},
+  {"위원회":"봉사위원회","국부":"장애인사역국 선한사랑부/선한농인부","사람":"발달장애인, 농인","사역영역":"사랑부 예배/농인부예배/농인사역","사회이슈":"장애"},
+  {"위원회":"봉사위원회","국부":"장애인사역국 장애사역지원부","사람":"발달장애인","사역영역":"예수마을학교/기쁨을 향한 여정/장애인 가족 지원","사회이슈":"장애"},
+  {"위원회":"멀티미디어위원회","국부":"역사편찬국","사람":"선한목자교회 성도","사역영역":"교회 역사 편찬","사회이슈":""},
+  {"위원회":"멀티미디어위원회","국부":"홈페이지운영국","사람":"선한목자교회 성도","사역영역":"교회 홈페이지","사회이슈":""},
+  {"위원회":"멀티미디어위원회","국부":"방송사역국","사람":"선한목자교회 성도","사역영역":"예배 카메라 중계/예배 음향 지원","사회이슈":""},
+  {"위원회":"멀티미디어위원회","국부":"홍보출판국","사람":"선한목자교회 성도","사역영역":"홍보물 디자인 출력/말씀함께 검수/홍보","사회이슈":""},
+  {"위원회":"멀티미디어위원회","국부":"전산사역국","사람":"선한목자교회 성도","사역영역":"","사회이슈":""},
+  {"위원회":"교육위원회","국부":"교육장학사역국","사람":"다음세대","사역영역":"장학금/드림프로젝트/비전센터 책방","사회이슈":"다음세대 복음화"},
+  {"위원회":"교육위원회","국부":"문화사역국","사람":"다음세대","사역영역":"선한소리합창단/엎드림/다드림","사회이슈":"다음세대 복음화, 예술과 공연"},
+  {"위원회":"교육위원회","국부":"어와나사역국","사람":"다음세대","사역영역":"어와나","사회이슈":"다음세대 복음화"},
+  {"위원회":"교육위원회","국부":"청소년국","사람":"청소년","사역영역":"청소년 주일학교","사회이슈":"다음세대 복음화"},
+  {"위원회":"교육위원회","국부":"어린이국","사람":"어린이","사역영역":"어린이 주일학교","사회이슈":"다음세대 복음화"},
+  {"위원회":"교육위원회","국부":"유치국","사람":"영유아, 미취학 아동","사역영역":"미취학 어린이 주일학교","사회이슈":"다음세대 복음화"},
+  {"위원회":"교육위원회","국부":"ACTS217다음세대연구소","사람":"다음세대","사역영역":"다음세대연구소/위드드림프로젝트","사회이슈":"다음세대 복음화"},
+  {"위원회":"교육위원회","국부":"다음세대연구소 위지온TV","사람":"다음세대","사역영역":"다음세대 교육콘텐츠 개발/교회학교 방송 스태프","사회이슈":"다음세대 복음화"},
+  {"위원회":"관리위원회","국부":"시설관리국","사람":"선한목자교회 성도","사역영역":"교회 시설 관리","사회이슈":""},
+  {"위원회":"관리위원회","국부":"재산관리국","사람":"선한목자교회 성도","사역영역":"교회 재산 관리","사회이슈":""},
+  {"위원회":"예수동행위원회","국부":"교구지원국","사람":"선한목자교회 성도","사역영역":"증인모임/위드지저스데이/예수동행일기","사회이슈":"성도의 훈련"},
+  {"위원회":"예수동행위원회","국부":"동행일기훈련국","사람":"선한목자교회 성도","사역영역":"예수동행일기 훈련","사회이슈":"성도의 훈련"},
+  {"위원회":"예수동행위원회","국부":"사역협력국","사람":"한국교회 성도","사역영역":"예수동행운동","사회이슈":"성도의 훈련"},
+  {"위원회":"교통환경위원회","국부":"차량운행국","사람":"선한목자교회 성도","사역영역":"교회 차량 운행","사회이슈":""},
+  {"위원회":"교통환경위원회","국부":"주차안내국","사람":"선한목자교회 성도","사역영역":"교회 주차 안내","사회이슈":""},
+  {"위원회":"교통환경위원회","국부":"지속가능환경국","사람":"선한목자교회 성도","사역영역":"에너지/환경 관리","사회이슈":""},
+  {"위원회":"니르크리스천리더십연구소","국부":"","사람":"신학생","사역영역":"신학생 훈련 지원/신학생 장학제도","사회이슈":"한국교회"},
+  {"위원회":"총여선교회","국부":"","사람":"여성, 선한목자교회 성도","사역영역":"여선교회/여성LTC훈련/미자립교회섬김/주목자 급식/안내데스크 섬김","사회이슈":"성도의 훈련, 선교, 전도, 구제, 성도의 연합"},
+  {"위원회":"총남선교회","국부":"","사람":"남성, 선한목자교회 성도","사역영역":"남선교회/믿사남/남성LTC/택시전도/선교사 후원/의료미용선교 지원/스포츠선교/재난구호/구제 활동","사회이슈":"성도의 훈련, 선교, 전도, 구제, 성도의 연합"},
+  {"위원회":"","국부":"지혜자대학","사람":"시니어 성도","사역영역":"지혜자대학","사회이슈":"노령 인구 증가"},
+  {"위원회":"","국부":"일대일양육","사람":"선한목자교회 성도, 새가족","사역영역":"일대일양육","사회이슈":"성도의 훈련"},
+  {"위원회":"","국부":"교구사역","사람":"선한목자교회 성도","사역영역":"속장/지역장","사회이슈":"성도의 훈련, 성도의 연합"}
+];
+
+const QUICK_TAGS = [
+  "CEO","가난한 사람들","남성","노숙자","농인","다문화이주민","다음세대","대한민국",
+  "디아스포라","목회자","미자립교회","미취학 아동","발달장애인","부모","비그리스도인",
+  "비혼모(미혼모)","사별 가족","새가족","선교사","선한목자교회 성도","시니어 성도",
+  "신학생","신혼부부","심리/정신적 어려움을 겪는 사람","어린이","어머니","여성","열방",
+  "영유아","외국인 노동자","외국인 유학생","위기가정","이단교회 성도","장례를 당한 가정",
+  "직장인","청소년","통일민(탈북민)","한국교회","한국교회 목회자","한국교회 성도",
+  "형제교회","환우","후원이 필요한 단체"
+];
+
+let activeField = 'all';
+let activeTag = null;
+
+// ── History ──
+let history = [{ query: '', field: 'all' }];
+let histIdx = 0;
+let isNavigating = false;
+
+function pushHistory(query, field) {
+  if (isNavigating) return;
+  const cur = history[histIdx];
+  if (cur.query === query && cur.field === field) return;
+  history = history.slice(0, histIdx + 1);
+  history.push({ query, field });
+  histIdx = history.length - 1;
+  updateNavButtons();
+}
+
+function updateNavButtons() {
+  document.getElementById('btnBack').disabled = histIdx <= 0;
+  document.getElementById('btnForward').disabled = histIdx >= history.length - 1;
+}
+
+function applyState(entry) {
+  isNavigating = true;
+  const input = document.getElementById('searchInput');
+  input.value = entry.query;
+  activeField = entry.field;
+  activeTag = null;
+  document.querySelectorAll('.seg-btn').forEach(b => b.classList.toggle('active', b.dataset.field === entry.field));
+  document.querySelectorAll('.tag-chip').forEach(c => c.classList.toggle('selected', c.textContent === entry.query && entry.query !== ''));
+  toggleClear(entry.query);
+  render();
+  isNavigating = false;
+  updateNavButtons();
+}
+
+document.getElementById('btnBack').addEventListener('click', () => {
+  if (histIdx > 0) { histIdx--; applyState(history[histIdx]); }
+});
+document.getElementById('btnForward').addEventListener('click', () => {
+  if (histIdx < history.length - 1) { histIdx++; applyState(history[histIdx]); }
+});
+
+// ── Clear button ──
+function toggleClear(val) {
+  document.getElementById('clearBtn').classList.toggle('visible', val.length > 0);
+}
+
+document.getElementById('clearBtn').addEventListener('click', () => {
+  const input = document.getElementById('searchInput');
+  input.value = '';
+  activeTag = null;
+  document.querySelectorAll('.tag-chip').forEach(c => c.classList.remove('selected'));
+  toggleClear('');
+  pushHistory('', activeField);
+  render();
+  input.focus();
+});
+
+// ── Quick tags ──
+const tagsEl = document.getElementById('quickTags');
+QUICK_TAGS.forEach(tag => {
+  const chip = document.createElement('button');
+  chip.className = 'tag-chip';
+  chip.textContent = tag;
+  chip.addEventListener('click', () => {
+    if (activeTag === tag) {
+      activeTag = null;
+      chip.classList.remove('selected');
+      document.getElementById('searchInput').value = '';
+      toggleClear('');
+      pushHistory('', activeField);
+    } else {
+      document.querySelectorAll('.tag-chip').forEach(c => c.classList.remove('selected'));
+      activeTag = tag;
+      chip.classList.add('selected');
+      document.getElementById('searchInput').value = tag;
+      toggleClear(tag);
+      pushHistory(tag, activeField);
+    }
+    render();
+  });
+  tagsEl.appendChild(chip);
+});
+
+// ── Segmented control ──
+document.querySelectorAll('.seg-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.seg-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    activeField = btn.dataset.field;
+    const q = document.getElementById('searchInput').value.trim();
+    pushHistory(q, activeField);
+    render();
+  });
+});
+
+// ── Search input ──
+let debounceTimer = null;
+const searchInput = document.getElementById('searchInput');
+
+searchInput.addEventListener('input', e => {
+  activeTag = null;
+  document.querySelectorAll('.tag-chip').forEach(c => c.classList.remove('selected'));
+  toggleClear(e.target.value);
+  render();
+  clearTimeout(debounceTimer);
+  debounceTimer = setTimeout(() => pushHistory(e.target.value.trim(), activeField), 600);
+});
+
+searchInput.addEventListener('keydown', e => {
+  if (e.key === 'Enter') {
+    clearTimeout(debounceTimer);
+    pushHistory(e.target.value.trim(), activeField);
+  }
+});
+
+// ── Helpers ──
+function esc(str) {
+  return str.replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+
+function hl(text, q) {
+  if (!q || !text) return esc(text);
+  const safe = q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  return esc(text).replace(new RegExp(safe, 'gi'), m => `<mark>${m}</mark>`);
+}
+
+// ── Render ──
+function render() {
+  const query = searchInput.value.trim();
+  const q = query.toLowerCase();
+  const resultsEl = document.getElementById('results');
+  const statsEl = document.getElementById('stats');
+
+  let filtered = DATA;
+  if (query) {
+    filtered = DATA.filter(row => {
+      if (activeField === 'all')
+        return row['사람'].toLowerCase().includes(q) ||
+               row['사역영역'].toLowerCase().includes(q) ||
+               row['사회이슈'].toLowerCase().includes(q);
+      if (activeField === '사람')    return row['사람'].toLowerCase().includes(q);
+      if (activeField === '사역영역') return row['사역영역'].toLowerCase().includes(q);
+      if (activeField === '사회이슈') return row['사회이슈'].toLowerCase().includes(q);
+      return false;
+    });
+  }
+
+  statsEl.textContent = query
+    ? `"${query}" 검색 결과 — ${filtered.length}개`
+    : `전체 ${filtered.length}개`;
+
+  if (filtered.length === 0) {
+    resultsEl.innerHTML = `
+      <div class="empty">
+        <span class="empty-icon">🔍</span>
+        <div class="empty-title">결과가 없어요</div>
+        <div class="empty-sub">다른 키워드로 검색해 보세요.</div>
+      </div>`;
+    return;
+  }
+
+  resultsEl.innerHTML = filtered.map(row => {
+    const person   = row['사람'];
+    const ministry = row['사역영역'];
+    const issue    = row['사회이슈'];
+    const hasDetail = person || issue || ministry;
+
+    return `
+      <div class="card">
+        <div class="card-top">
+          ${row['위원회'] ? `<span class="badge badge-committee">${esc(row['위원회'])}</span>` : ''}
+          ${row['국부']   ? `<span class="badge badge-dept">${esc(row['국부'])}</span>` : ''}
+        </div>
+        ${hasDetail ? `<div class="card-rows">
+          ${person   ? `<div class="card-row"><span class="row-label">사람</span><span class="row-value">${hl(person, query)}</span></div>` : ''}
+          ${issue    ? `<div class="card-row"><span class="row-label">사회이슈</span><span class="row-value">${hl(issue, query)}</span></div>` : ''}
+          ${ministry ? `<div class="card-row"><span class="row-label">사역영역</span><span class="row-value">${hl(ministry, query)}</span></div>` : ''}
+        </div>` : ''}
+      </div>`;
+  }).join('');
+}
+
+render();
+updateNavButtons();
+</script>
+</body>
+</html>
