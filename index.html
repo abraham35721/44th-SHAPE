@@ -846,13 +846,99 @@ const detailScreen  = document.getElementById('detailScreen');
 const heroInput     = document.getElementById('heroInput');
 const topInput      = document.getElementById('topInput');
 
-// ── 이미지 매핑 (위원회/국부 이름 → 이미지 파일명) ──
-const IMAGE_MAP = {
+// ── 위원회 공통 이미지 매핑 ──
+const COMMITTEE_IMAGE_MAP = {
   '봉사위원회': 'page_009.jpg',
+  '가정사역위원회': 'page_023.jpg',
+  '관리위원회': 'page_029.jpg',
+  '교육위원회': 'page_035.jpg',
+  '멀티미디어위원회': 'page_045.jpg',
+  '선교위원회': 'page_051.jpg',
+  '예배위원회': 'page_061.jpg',
+  '예수동행위원회': 'page_069.jpg',
+  '의료미용선교위원회': 'page_075.jpg',
+  '제자양육위원회': 'page_079.jpg',
+  '중보기도위원회': 'page_087.jpg',
+  '일터선교위원회': 'page_095.jpg',
+  '총남선교회': 'page_099.jpg',
+  '총여선교회': 'page_103.jpg',
+  '니르크리스천리더십연구소': 'page_107.jpg',
+};
+
+// ── 국/부 전용 이미지 매핑 ──
+const DEPT_IMAGE_MAP = {
+  '가족복지국': 'page_010.jpg',
+  '사역관리국': 'page_011.jpg',
+  '예수마을사역국': 'page_012.jpg',
+  '예수마을사역국 교회봉사부': 'page_013.jpg',
+  '예수마을사역국 위드부': 'page_014.jpg',
+  '장례예식국': 'page_015.jpg',
+  '장애인사역국 선한사랑부/선한농인부': 'page_016.jpg',
+  '장애인사역국 장애사역지원부': 'page_017.jpg',
+  '지역사회봉사국': 'page_018.jpg',
+  '호스피스사역국': 'page_019.jpg',
+  '혼인예식국': 'page_020.jpg',
+  '가정세미나사역국': 'page_024.jpg',
+  '마더와이즈사역국': 'page_025.jpg',
+  '선목상담국': 'page_026.jpg',
+  '시설관리국': 'page_030.jpg',
+  '재산관리국': 'page_031.jpg',
+  '지속가능환경국': 'page_032.jpg',
+  '차량안내국': 'page_033.jpg',
+  '교육장학사역국': 'page_036.jpg',
+  '문화사역국': 'page_037.jpg',
+  '어와나사역국': 'page_038.jpg',
+  '청소년국': 'page_039.jpg',
+  '어린이국': 'page_040.jpg',
+  '유치국': 'page_041.jpg',
+  'ACTS217다음세대연구소': 'page_042.jpg',
+  '다음세대연구소 위지온TV': 'page_043.jpg',
+  '홍보출판국': 'page_046.jpg',
+  '방송사역국': 'page_047.jpg',
+  '전산사역국': 'page_048.jpg',
+  '홈페이지운영국': 'page_049.jpg',
+  '전도국': 'page_052.jpg',
+  '국내선교국': 'page_053.jpg',
+  '해외선교국': 'page_054.jpg',
+  '특수선교국': 'page_055.jpg',
+  '특수선교국 중국어예배부': 'page_056.jpg',
+  '통일선교국': 'page_058.jpg',
+  '교회개척지원국': 'page_059.jpg',
+  '예배국': 'page_062.jpg',
+  '제단관리국': 'page_063.jpg',
+  '찬양국': 'page_064.jpg',
+  '경배와찬양국': 'page_066.jpg',
+  '행사지원국': 'page_067.jpg',
+  '교구지원국': 'page_070.jpg',
+  '동행일기훈련국': 'page_071.jpg',
+  '사역협력국': 'page_072.jpg',
+  '의료선교국': 'page_076.jpg',
+  '미용선교국': 'page_077.jpg',
+  '목회자제자훈련국': 'page_080.jpg',
+  '평신도제자훈련국': 'page_081.jpg',
+  '임원훈련국': 'page_082.jpg',
+  '새가족사역국': 'page_083.jpg',
+  '바나바사역국': 'page_084.jpg',
+  '아버지마음국': 'page_085.jpg',
+  '교회중보기도국': 'page_089.jpg',
+  '나라와열방중보기도국': 'page_091.jpg',
+  '예배중보기도국': 'page_092.jpg',
+  '기도지원국': 'page_093.jpg',
+  '일터선교국': 'page_096.jpg',
+  '일터리더십공동체국': 'page_097.jpg',
+  '총남선교회': 'page_101.jpg',
+  '총여선교회': 'page_104.jpg',
+  '니르크리스천리더십연구소': 'page_108.jpg',
 };
 
 // GitHub Pages 기본 경로
 const BASE_URL = 'https://abraham35721.github.io/44th-SHAPE/';
+
+function makeImg(file, alt) {
+  return `<img src="${BASE_URL}${file}" alt="${alt}"
+    style="width:100%;border-radius:14px;box-shadow:0 1px 3px rgba(0,0,0,0.08);display:block;margin-bottom:12px;"
+    onerror="this.style.display='none'" />`;
+}
 
 // ── 상세 화면 ──
 function openDetail(row) {
@@ -876,18 +962,17 @@ function openDetail(row) {
   renderTags('detailIssue',    row['사회이슈']);
   renderTags('detailMinistry', row['사역영역'].replace(/\//g, ', '));
 
-  // 이미지 영역 업데이트
+  // 이미지 영역 업데이트 (위원회 공통 + 국/부 전용)
   const imgSection = document.getElementById('detailImageSection');
-  const key = row['위원회'] || row['국부'];
-  const imgFile = IMAGE_MAP[key] || IMAGE_MAP[row['국부']];
+  const committeeImg = COMMITTEE_IMAGE_MAP[row['위원회']];
+  const deptImg = DEPT_IMAGE_MAP[row['국부']];
 
-  if (imgFile) {
-    imgSection.innerHTML = `
-      <img src="${BASE_URL}${imgFile}"
-        alt="${key}"
-        style="width:100%;border-radius:14px;box-shadow:0 1px 3px rgba(0,0,0,0.08);display:block;"
-        onerror="this.parentElement.innerHTML='<div class=\'image-placeholder\'><div class=\'image-placeholder-icon\'>🖼️</div><div class=\'image-placeholder-text\'>이미지를 불러올 수 없어요</div><div class=\'image-placeholder-sub\'>GitHub에 이미지가 업로드 되었는지 확인해 주세요</div></div>'"
-      />`;
+  let html = '';
+  if (committeeImg) html += makeImg(committeeImg, row['위원회']);
+  if (deptImg && deptImg !== committeeImg) html += makeImg(deptImg, row['국부']);
+
+  if (html) {
+    imgSection.innerHTML = html;
   } else {
     imgSection.innerHTML = `
       <div class="image-placeholder">
