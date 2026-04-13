@@ -372,6 +372,8 @@
 
   .badge-committee { background: var(--blue); color: #fff; }
   .badge-dept { background: var(--blue-light); color: var(--blue); }
+  .badge-red { background: #FF3B30; color: #fff; }
+  .badge-red-dept { background: rgba(255,59,48,0.10); color: #FF3B30; }
 
   .card-rows { display: flex; flex-direction: column; gap: 6px; }
 
@@ -865,74 +867,77 @@ const COMMITTEE_IMAGE_MAP = {
   '니르크리스천리더십연구소': 'page_107.jpg',
 };
 
-// ── 국/부 전용 이미지 매핑 ──
+// ── 국/부 전용 이미지 매핑 (여러장 지원) ──
 const DEPT_IMAGE_MAP = {
-  '가족복지국': 'page_010.jpg',
-  '사역관리국': 'page_011.jpg',
-  '예수마을사역국': 'page_012.jpg',
-  '예수마을사역국 교회봉사부': 'page_013.jpg',
-  '예수마을사역국 위드부': 'page_014.jpg',
-  '장례예식국': 'page_015.jpg',
-  '장애인사역국 선한사랑부/선한농인부': 'page_016.jpg',
-  '장애인사역국 장애사역지원부': 'page_017.jpg',
-  '지역사회봉사국': 'page_018.jpg',
-  '호스피스사역국': 'page_019.jpg',
-  '혼인예식국': 'page_020.jpg',
-  '가정세미나사역국': 'page_024.jpg',
-  '마더와이즈사역국': 'page_025.jpg',
-  '선목상담국': 'page_026.jpg',
-  '시설관리국': 'page_030.jpg',
-  '재산관리국': 'page_031.jpg',
-  '지속가능환경국': 'page_032.jpg',
-  '차량안내국': 'page_033.jpg',
-  '교육장학사역국': 'page_036.jpg',
-  '문화사역국': 'page_037.jpg',
-  '어와나사역국': 'page_038.jpg',
-  '청소년국': 'page_039.jpg',
-  '어린이국': 'page_040.jpg',
-  '유치국': 'page_041.jpg',
-  'ACTS217다음세대연구소': 'page_042.jpg',
-  '다음세대연구소 위지온TV': 'page_043.jpg',
-  '홍보출판국': 'page_046.jpg',
-  '방송사역국': 'page_047.jpg',
-  '전산사역국': 'page_048.jpg',
-  '홈페이지운영국': 'page_049.jpg',
-  '전도국': 'page_052.jpg',
-  '국내선교국': 'page_053.jpg',
-  '해외선교국': 'page_054.jpg',
-  '특수선교국': 'page_055.jpg',
-  '특수선교국 중국어예배부': 'page_056.jpg',
-  '통일선교국': 'page_058.jpg',
-  '교회개척지원국': 'page_059.jpg',
-  '예배국': 'page_062.jpg',
-  '제단관리국': 'page_063.jpg',
-  '찬양국': 'page_064.jpg',
-  '경배와찬양국': 'page_066.jpg',
-  '행사지원국': 'page_067.jpg',
-  '교구지원국': 'page_070.jpg',
-  '동행일기훈련국': 'page_071.jpg',
-  '사역협력국': 'page_072.jpg',
-  '의료선교국': 'page_076.jpg',
-  '미용선교국': 'page_077.jpg',
-  '목회자제자훈련국': 'page_080.jpg',
-  '평신도제자훈련국': 'page_081.jpg',
-  '임원훈련국': 'page_082.jpg',
-  '새가족사역국': 'page_083.jpg',
-  '바나바사역국': 'page_084.jpg',
-  '아버지마음국': 'page_085.jpg',
-  '교회중보기도국': 'page_089.jpg',
-  '나라와열방중보기도국': 'page_091.jpg',
-  '예배중보기도국': 'page_092.jpg',
-  '기도지원국': 'page_093.jpg',
-  '일터선교국': 'page_096.jpg',
-  '일터리더십공동체국': 'page_097.jpg',
-  '총남선교회': 'page_101.jpg',
-  '총여선교회': 'page_104.jpg',
-  '니르크리스천리더십연구소': 'page_108.jpg',
+  '가족복지국': ['page_010.jpg'],
+  '사역관리국': ['page_011.jpg'],
+  '예수마을사역국': ['page_012.jpg'],
+  '예수마을사역국 교회봉사부': ['page_013.jpg'],
+  '예수마을사역국 위드부': ['page_014.jpg'],
+  '장례예식국': ['page_015.jpg'],
+  '장애인사역국 선한사랑부/선한농인부': ['page_016.jpg'],
+  '장애인사역국 장애사역지원부': ['page_017.jpg'],
+  '지역사회봉사국': ['page_018.jpg'],
+  '호스피스사역국': ['page_019.jpg'],
+  '혼인예식국': ['page_020.jpg'],
+  '가정세미나사역국': ['page_024.jpg'],
+  '마더와이즈사역국': ['page_025.jpg'],
+  '선목상담국': ['page_026.jpg'],
+  '시설관리국': ['page_030.jpg'],
+  '재산관리국': ['page_031.jpg'],
+  '지속가능환경국': ['page_032.jpg'],
+  '차량안내국': ['page_033.jpg'],
+  '교육장학사역국': ['page_036.jpg'],
+  '문화사역국': ['page_037.jpg'],
+  '어와나사역국': ['page_038.jpg'],
+  '청소년국': ['page_039.jpg'],
+  '어린이국': ['page_040.jpg'],
+  '유치국': ['page_041.jpg'],
+  'ACTS217다음세대연구소': ['page_042.jpg'],
+  '다음세대연구소 위지온TV': ['page_043.jpg'],
+  '홍보출판국': ['page_046.jpg'],
+  '방송사역국': ['page_047.jpg'],
+  '전산사역국': ['page_048.jpg'],
+  '홈페이지운영국': ['page_049.jpg'],
+  '전도국': ['page_052.jpg'],
+  '국내선교국': ['page_053.jpg'],
+  '해외선교국': ['page_054.jpg'],
+  '특수선교국': ['page_055.jpg'],
+  '특수선교국 중국어예배부': ['page_056.jpg'],
+  '통일선교국': ['page_057.jpg', 'page_058.jpg'],
+  '교회개척지원국': ['page_059.jpg'],
+  '예배국': ['page_062.jpg'],
+  '제단관리국': ['page_063.jpg'],
+  '찬양국': ['page_064.jpg'],
+  '경배와찬양국': ['page_065.jpg', 'page_066.jpg'],
+  '행사지원국': ['page_067.jpg'],
+  '교구지원국': ['page_070.jpg'],
+  '동행일기훈련국': ['page_071.jpg'],
+  '사역협력국': ['page_072.jpg'],
+  '의료선교국': ['page_076.jpg'],
+  '미용선교국': ['page_077.jpg'],
+  '목회자제자훈련국': ['page_080.jpg'],
+  '평신도제자훈련국': ['page_081.jpg'],
+  '임원훈련국': ['page_082.jpg'],
+  '새가족사역국': ['page_083.jpg'],
+  '바나바사역국': ['page_084.jpg'],
+  '아버지마음국': ['page_085.jpg'],
+  '교회중보기도국': ['page_088.jpg', 'page_089.jpg'],
+  '나라와열방중보기도국': ['page_090.jpg', 'page_091.jpg'],
+  '예배중보기도국': ['page_092.jpg'],
+  '기도지원국': ['page_093.jpg'],
+  '일터선교국': ['page_096.jpg'],
+  '일터리더십공동체국': ['page_097.jpg'],
+  '총남선교회': ['page_100.jpg', 'page_101.jpg'],
+  '총여선교회': ['page_104.jpg'],
+  '니르크리스천리더십연구소': ['page_108.jpg'],
 };
 
 // GitHub Pages 기본 경로
 const BASE_URL = 'https://abraham35721.github.io/44th-SHAPE/';
+
+// ── 빨간색 계열로 표시할 항목 ──
+const RED_ITEMS = ['지혜자대학', '일대일양육', '교구사역'];
 
 function makeImg(file, alt) {
   return `<img src="${BASE_URL}${file}" alt="${alt}"
@@ -942,8 +947,16 @@ function makeImg(file, alt) {
 
 // ── 상세 화면 ──
 function openDetail(row) {
+  const isRed = RED_ITEMS.includes(row['위원회']) || RED_ITEMS.includes(row['국부']);
+  const accentColor = isRed ? '#FF3B30' : 'var(--blue)';
+
   document.getElementById('detailTopTitle').textContent = row['국부'] || row['위원회'];
-  document.getElementById('detailCommittee').textContent = row['위원회'] || '';
+  document.getElementById('detailTopTitle').style.color = isRed ? '#FF3B30' : '';
+
+  const committeeEl = document.getElementById('detailCommittee');
+  committeeEl.textContent = row['위원회'] || '';
+  committeeEl.style.color = accentColor;
+
   document.getElementById('detailDept').textContent = row['국부'] || row['위원회'];
 
   function renderTags(id, text) {
@@ -962,14 +975,16 @@ function openDetail(row) {
   renderTags('detailIssue',    row['사회이슈']);
   renderTags('detailMinistry', row['사역영역'].replace(/\//g, ', '));
 
-  // 이미지 영역 업데이트 (위원회 공통 + 국/부 전용)
+  // 이미지 영역 업데이트 (위원회 공통 + 국/부 전용, 여러장 지원)
   const imgSection = document.getElementById('detailImageSection');
   const committeeImg = COMMITTEE_IMAGE_MAP[row['위원회']];
-  const deptImg = DEPT_IMAGE_MAP[row['국부']];
+  const deptImgs = DEPT_IMAGE_MAP[row['국부']] || [];
 
   let html = '';
   if (committeeImg) html += makeImg(committeeImg, row['위원회']);
-  if (deptImg && deptImg !== committeeImg) html += makeImg(deptImg, row['국부']);
+  deptImgs.forEach(f => {
+    if (f !== committeeImg) html += makeImg(f, row['국부']);
+  });
 
   if (html) {
     imgSection.innerHTML = html;
@@ -1164,8 +1179,8 @@ function render() {
     card.innerHTML = `
       <div class="card-main">
         <div class="card-top">
-          ${row['위원회'] ? `<span class="badge badge-committee">${esc(row['위원회'])}</span>` : ''}
-          ${row['국부']   ? `<span class="badge badge-dept">${esc(row['국부'])}</span>` : ''}
+          ${row['위원회'] ? `<span class="badge ${RED_ITEMS.includes(row['위원회']) ? 'badge-red' : 'badge-committee'}">${esc(row['위원회'])}</span>` : ''}
+          ${row['국부']   ? `<span class="badge ${RED_ITEMS.includes(row['국부']) ? 'badge-red-dept' : 'badge-dept'}">${esc(row['국부'])}</span>` : ''}
         </div>
         ${hasDetail ? `<div class="card-rows">
           ${person   ? `<div class="card-row"><span class="row-label">사람</span><span class="row-value">${hl(person, query)}</span></div>` : ''}
