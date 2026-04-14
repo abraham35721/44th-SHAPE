@@ -633,7 +633,7 @@
     </div>
 
     <div class="hero-title">SHAPE 위원회 검색</div>
-    <div class="hero-sub">사람, 사회이슈, 사역영역과 관련된 내용을 검색하면<br>해당 위원회와 국/부를 찾을 수 있습니다.</div>
+    <div class="hero-sub">위원회, 국/부, 사람, 사회이슈, 사역영역으로 검색하면<br>해당 위원회와 국/부를 찾을 수 있습니다.</div>
 
     <div class="search-wrap">
       <svg class="search-icon-el" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -1140,7 +1140,9 @@ function render() {
   if (query) {
     filtered = DATA.filter(row => {
       if (activeField === 'all')
-        return row['사람'].toLowerCase().includes(q) ||
+        return row['위원회'].toLowerCase().includes(q) ||
+               row['국부'].toLowerCase().includes(q) ||
+               row['사람'].toLowerCase().includes(q) ||
                row['사역영역'].toLowerCase().includes(q) ||
                row['사회이슈'].toLowerCase().includes(q);
       if (activeField === '사람')    return row['사람'].toLowerCase().includes(q);
