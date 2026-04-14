@@ -6,23 +6,28 @@
 <title>SHAPE 위원회 검색</title>
 <style>
   :root {
-    --blue:       #007AFF;
-    --blue-light: rgba(0,122,255,0.10);
-    --bg:         #F2F2F7;
-    --surface:    #FFFFFF;
-    --surface2:   #F2F2F7;
-    --label:      #1C1C1E;
-    --label2:     #3A3A3C;
-    --label3:     #6D6D72;
-    --label4:     #AEAEB2;
-    --separator:  rgba(60,60,67,0.13);
-    --radius-sm:  10px;
-    --radius-md:  14px;
-    --shadow-sm:  0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
-    --shadow-md:  0 4px 16px rgba(0,0,0,0.10), 0 1px 4px rgba(0,0,0,0.05);
+    --blue:        #007AFF;
+    --blue-light:  rgba(0,122,255,0.10);
+    --bg:          #F2F2F7;
+    --surface:     #FFFFFF;
+    --surface2:    #F2F2F7;
+    --label:       #1C1C1E;
+    --label2:      #3A3A3C;
+    --label3:      #6D6D72;
+    --label4:      #AEAEB2;
+    --separator:   rgba(60,60,67,0.13);
+    --radius-sm:   10px;
+    --radius-md:   14px;
+    --shadow-sm:   0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
+    --shadow-md:   0 4px 16px rgba(0,0,0,0.10), 0 1px 4px rgba(0,0,0,0.05);
   }
 
   * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+
+  @keyframes fadeInUp {
+    from { opacity:0; transform:translateY(16px); }
+    to   { opacity:1; transform:translateY(0); }
+  }
 
   body {
     font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif;
@@ -32,6 +37,8 @@
     -webkit-font-smoothing: antialiased;
     overflow-x: hidden;
   }
+
+  .aurora-blob { display: none; }
 
   /* ════════════════════════════
      SEARCH SCREEN (초기 화면)
@@ -56,6 +63,7 @@
   .search-screen-inner {
     width: 100%;
     max-width: 560px;
+    animation: fadeInUp 0.4s ease both;
   }
 
   /* 아이콘 */
@@ -65,7 +73,7 @@
     border-radius: 18px;
     display: flex; align-items: center; justify-content: center;
     margin: 0 auto 24px;
-    box-shadow: 0 6px 20px rgba(0,122,255,0.38);
+    box-shadow: 0 6px 20px rgba(0,122,255,0.32);
   }
 
   .hero-icon svg { width: 36px; height: 36px; color: #fff; }
@@ -76,6 +84,16 @@
     letter-spacing: -0.6px;
     text-align: center;
     margin-bottom: 8px;
+    color: var(--label);
+  }
+
+  .hero-title .shape-word {
+    background: linear-gradient(135deg, #007AFF 0%, #00C2FF 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: 800;
+    letter-spacing: -0.8px;
   }
 
   .hero-sub {
@@ -89,17 +107,34 @@
   /* ── Search bar ── */
   .search-wrap {
     position: relative;
-    margin-bottom: 20px;
+    margin-bottom: 24px;
   }
 
   .search-icon-el {
     position: absolute;
-    left: 14px; top: 50%;
+    left: 16px; top: 50%;
     transform: translateY(-50%);
     width: 18px; height: 18px;
     color: var(--label4);
     pointer-events: none;
   }
+
+  .search-wrap::before {
+    content: '';
+    position: absolute;
+    inset: -1.5px;
+    border-radius: calc(var(--radius-md) + 1.5px);
+    background: linear-gradient(135deg, #007AFF, #00C2FF);
+    opacity: 0;
+    transition: opacity 0.25s;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  .search-wrap:focus-within::before { opacity: 1; }
+
+  .search-wrap .search-icon-el,
+  .search-wrap .clear-btn { z-index: 2; }
 
   .search-input {
     width: 100%;
@@ -112,11 +147,13 @@
     border-radius: var(--radius-md);
     outline: none;
     box-shadow: var(--shadow-sm);
+    position: relative;
+    z-index: 1;
     transition: box-shadow 0.2s;
   }
 
   .search-input:focus {
-    box-shadow: 0 0 0 3.5px rgba(0,122,255,0.28), var(--shadow-sm);
+    box-shadow: var(--shadow-sm);
   }
 
   .search-input::placeholder { color: var(--label4); }
@@ -133,23 +170,23 @@
     display: none;
     align-items: center; justify-content: center;
     color: #fff;
-    font-size: 12px;
+    font-size: 11px;
   }
 
   .clear-btn.visible { display: flex; }
 
   /* ── Quick tags ── */
   .tags-label {
-    font-size: 11.5px;
+    font-size: 11px;
     font-weight: 600;
     color: var(--label4);
     text-transform: uppercase;
-    letter-spacing: 0.7px;
-    margin-bottom: 10px;
+    letter-spacing: 0.9px;
+    margin-bottom: 12px;
     padding-left: 2px;
   }
 
-  .tags-wrap { display: flex; flex-wrap: wrap; gap: 7px; }
+  .tags-wrap { display: flex; flex-wrap: wrap; gap: 8px; }
 
   .tag-chip {
     padding: 6px 13px;
@@ -167,7 +204,11 @@
   }
 
   .tag-chip:active { transform: scale(0.94); }
-  .tag-chip.selected { background: var(--blue); color: #fff; box-shadow: 0 2px 8px rgba(0,122,255,0.35); }
+  .tag-chip.selected {
+    background: var(--blue);
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(0,122,255,0.35);
+  }
 
   /* ════════════════════════════
      RESULTS SCREEN (결과 화면)
@@ -230,7 +271,7 @@
 
   .top-search-icon {
     position: absolute;
-    left: 11px; top: 50%;
+    left: 12px; top: 50%;
     transform: translateY(-50%);
     width: 15px; height: 15px;
     color: var(--label4);
@@ -329,11 +370,14 @@
 
   /* ── Cards ── */
   .card {
-    background: var(--surface);
+    background: rgba(255,255,255,0.88);
+    border: 1px solid rgba(0,0,0,0.06);
     border-radius: var(--radius-md);
     padding: 16px 18px;
-    box-shadow: var(--shadow-sm);
-    transition: box-shadow 0.2s, transform 0.15s;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+    transition: all 0.2s;
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -341,7 +385,12 @@
   }
 
   @media (hover:hover) {
-    .card:hover { box-shadow: var(--shadow-md); transform: translateY(-1px); }
+    .card:hover {
+      background: rgba(255,255,255,0.98);
+      border-color: rgba(124,58,237,0.15);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.09);
+    }
   }
 
   .card:active { transform: scale(0.98); }
@@ -364,7 +413,7 @@
   .badge {
     display: inline-flex;
     padding: 4px 10px;
-    border-radius: 6px;
+    border-radius: 7px;
     font-size: 12px;
     font-weight: 600;
     letter-spacing: -0.1px;
@@ -418,9 +467,9 @@
 
   /* ── Mobile ── */
   @media (max-width: 480px) {
-    .hero-title { font-size: 24px; }
-    .hero-icon { width: 60px; height: 60px; border-radius: 15px; }
-    .hero-icon svg { width: 30px; height: 30px; }
+    .hero-title { font-size: 26px; }
+    .hero-icon { width: 64px; height: 64px; border-radius: 18px; }
+    .hero-icon svg { width: 32px; height: 32px; }
     .search-input { font-size: 16px; }
     .seg-btn { font-size: 12px; }
     .card { padding: 14px 15px; }
@@ -444,7 +493,7 @@
 
   #resultsScreen.push-left {
     transform: translateX(-30%);
-    filter: brightness(0.85);
+    filter: brightness(0.6);
     pointer-events: none;
   }
 
@@ -488,6 +537,7 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    color: var(--label);
   }
 
   /* 상세 본문 */
@@ -538,11 +588,11 @@
   .detail-section { margin-bottom: 16px; }
 
   .detail-section-label {
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 700;
     color: var(--label4);
     text-transform: uppercase;
-    letter-spacing: 0.7px;
+    letter-spacing: 0.9px;
     margin-bottom: 8px;
     padding-left: 4px;
   }
@@ -566,25 +616,25 @@
 
   .detail-row-icon {
     width: 32px; height: 32px;
-    border-radius: 8px;
+    border-radius: 9px;
     display: flex; align-items: center; justify-content: center;
     flex-shrink: 0;
     font-size: 16px;
   }
 
-  .icon-person   { background: rgba(52,199,89,0.12); }
-  .icon-issue    { background: rgba(255,149,0,0.12); }
-  .icon-ministry { background: rgba(175,82,222,0.12); }
+  .icon-person   { background: rgba(52,199,89,0.15); }
+  .icon-issue    { background: rgba(255,149,0,0.15); }
+  .icon-ministry { background: rgba(167,139,250,0.18); }
 
   .detail-row-content { flex: 1; min-width: 0; }
 
   .detail-row-key {
-    font-size: 11.5px;
+    font-size: 11px;
     font-weight: 600;
     color: var(--label4);
-    margin-bottom: 6px;
+    margin-bottom: 7px;
     text-transform: uppercase;
-    letter-spacing: 0.4px;
+    letter-spacing: 0.5px;
   }
 
   .detail-tags { display: flex; flex-wrap: wrap; gap: 6px; }
@@ -620,6 +670,7 @@
 </style>
 </head>
 <body>
+<div class="aurora-blob"></div>
 
 <!-- ① 검색 화면 -->
 <div id="searchScreen">
@@ -632,7 +683,7 @@
       </svg>
     </div>
 
-    <div class="hero-title">SHAPE 위원회 검색</div>
+    <div class="hero-title"><span class="shape-word">SHAPE</span> 위원회 검색</div>
     <div class="hero-sub">위원회, 국/부, 사람, 사회이슈, 사역영역으로 검색하면<br>해당 위원회와 국/부를 찾을 수 있습니다.</div>
 
     <div class="search-wrap">
@@ -1024,8 +1075,10 @@ function showSearch() {
   resultsScreen.classList.remove('visible');
   searchScreen.classList.remove('hidden');
   setTimeout(() => { resultsScreen.style.display = 'none'; }, 260);
-  heroInput.value = topInput.value;
-  toggleHeroClear(heroInput.value);
+  heroInput.value = '';
+  topInput.value = '';
+  toggleHeroClear('');
+  toggleTopClear('');
   heroInput.focus();
 }
 
